@@ -6,8 +6,6 @@ const _ = require('lodash')
 const Bacon = require('baconjs')
 const AWS = require('aws-sdk')
 AWS.config.update({
-	accessKeyId: 'AKIAJKDTRSO4GNSXK6BA',
-	secretAccessKey: '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',
 	region: 'ap-northeast-1'
 })
 
