@@ -4,6 +4,7 @@ const fs = require('fs')
 const os = require('os')
 const _ = require('lodash')
 const Bacon = require('baconjs')
+const machineId = require("node-machine-id")
 const AWS = require('aws-sdk')
 AWS.config.update({
 	region: 'ap-northeast-1'
@@ -26,24 +27,28 @@ const run = (param)=> new Promise((resolve,reject)=> {
 }
 )
 
-const machineId = 'machine-Id'
+const client = s3.createClient({s3Client: new AWS.S3({signatureVersion: 'v4'})})
 
-const syncParams = {
-	localDir: './data',
-	deleteRemoved: false,
-	s3Params: {
-		Bucket: 'wifi-speed.yamaokaya.net',
-		Prefix: `results/machineId=${machineId}/`
-	}
-}
-
-const sync = ()=> new Promise((resolve,reject)=>{
-	const uploader = client.uploadDir(syncParams)
+const sync = (p)=> new Promise((resolve,reject)=>{
+	const uploader = client.uploadDir(p)
 	uploader.on('end',resolve)
 	uploader.on('error',reject)
 })
 
-const client = s3.createClient({s3Client: new AWS.S3({signatureVersion: 'v4'})})
+const syncDir = Bacon.fromPromise(machineId.machineId())
+.doLog()
+.map((v)=> ({
+	localDir: './data',
+	deleteRemoved: false,
+	s3Params: {
+		Bucket: 'wifi-speed.yamaokaya.net',
+		Prefix: `results/machineId=${v}/`
+	}	
+}))
+.flatMap(Bacon.combineTemplate)
+.map(sync)
+.flatMap(Bacon.fromPromise)
+
 
 Bacon.fromPromise(run({maxTime: 5000}))
 .map((v)=>
@@ -60,9 +65,11 @@ Bacon.fromPromise(run({maxTime: 5000}))
 .map((v)=>
 	fs.writeFileSync(`data/${Date.now()}.json`,JSON.stringify(v))
 )
-.map(sync)
-.flatMap(Bacon.fromPromise)
-.onValue(console.log)
+.flatMap(syncDir)
+.log()
+// .map(sync)
+// .flatMap(Bacon.fromPromise)
+
 
 
 // var test = speedTest({maxTime: 5000})
