@@ -30,21 +30,8 @@ const sync = (p)=> new Promise((resolve,reject)=>{
 	uploader.on('error',reject)
 })
 
-const syncDir = Bacon.fromPromise(machineId.machineId())
-.doLog()
-.map((v)=> ({
-	localDir: './data',
-	deleteRemoved: false,
-	s3Params: {
-		Bucket: 'wifi-speed.yamaokaya.net',
-		Prefix: `results/machineId=${v}/`
-	}	
-}))
-.flatMap(Bacon.combineTemplate)
-.map(sync)
-.flatMap(Bacon.fromPromise)
-
-Bacon.repeatedly(1000*60*5,wifis)
+//15分おきにスピードテストを実行する
+Bacon.repeatedly(1000*60*15,wifis)
 .doLog()
 .map(run({maxTime: 5000}))
 .flatMap(Bacon.fromPromise)
@@ -62,5 +49,17 @@ Bacon.repeatedly(1000*60*5,wifis)
 .map((v)=>
 	fs.writeFileSync(`data/${Date.now()}.json`,JSON.stringify(v))
 )
-.flatMap(syncDir)
+//sync
+.map((v)=> machineId.machineId())
+.flatMap(Bacon.fromPromise)
+.flatMap( (v)=> Bacon.combineTemplate({
+	localDir: './data',
+	deleteRemoved: false,
+	s3Params: {
+		Bucket: 'wifi-speed.yamaokaya.net',
+		Prefix: `results/machineId=${v}/`
+	}
+}))
+.map(sync)
+.flatMap(Bacon.fromPromise)
 .log()
