@@ -13,14 +13,8 @@ AWS.config.update({
 const s3 = require('s3')
 const speedTest = require('speedtest-net')
 
+//TODO 交互にWIFIを変える用
 const wifis = [1,2]
-
-// console.log(
-// 	_.chain(os.networkInterfaces())
-// 	.pick(['wlan0','en0'])
-// 	//.head()
-// 	.value()
-// )
 
 const run = (param)=> new Promise((resolve,reject)=> {
 	const t = speedTest(param);
@@ -29,9 +23,8 @@ const run = (param)=> new Promise((resolve,reject)=> {
 }
 )
 
-const client = s3.createClient({s3Client: new AWS.S3({signatureVersion: 'v4'})})
-
 const sync = (p)=> new Promise((resolve,reject)=>{
+	const client = s3.createClient({s3Client: new AWS.S3({signatureVersion: 'v4'})})
 	const uploader = client.uploadDir(p)
 	uploader.on('end',resolve)
 	uploader.on('error',reject)
