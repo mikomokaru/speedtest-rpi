@@ -13,6 +13,8 @@ AWS.config.update({
 const s3 = require('s3')
 const speedTest = require('speedtest-net')
 
+const wifis = [1,2]
+
 // console.log(
 // 	_.chain(os.networkInterfaces())
 // 	.pick(['wlan0','en0'])
@@ -49,8 +51,10 @@ const syncDir = Bacon.fromPromise(machineId.machineId())
 .map(sync)
 .flatMap(Bacon.fromPromise)
 
-
-Bacon.fromPromise(run({maxTime: 5000}))
+Bacon.repeatedly(1000*60*5,wifis)
+.doLog()
+.map(run({maxTime: 5000}))
+.flatMap(Bacon.fromPromise)
 .map((v)=>
 	_.assign(
 		v,
@@ -67,17 +71,3 @@ Bacon.fromPromise(run({maxTime: 5000}))
 )
 .flatMap(syncDir)
 .log()
-// .map(sync)
-// .flatMap(Bacon.fromPromise)
-
-
-
-// var test = speedTest({maxTime: 5000})
-
-// test.on('data', data => {
-//   console.dir(data);
-// });
-
-// test.on('error', err => {
-//   console.error(err);
-// });
