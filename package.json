@@ -1,0 +1,19 @@
+{
+  "name": "speedtest",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.217.1",
+    "baconjs": "^2.0.5",
+    "lodash": "^4.17.5",
+    "s3": "^4.4.0",
+    "speedtest-net": "^1.4.2"
+  }
+}
