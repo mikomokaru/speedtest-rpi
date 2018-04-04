@@ -12,10 +12,12 @@
   "dependencies": {
     "aws-sdk": "^2.217.1",
     "baconjs": "^2.0.5",
+    "child-process-promise": "^2.2.1",
     "lodash": "^4.17.5",
     "node-machine-id": "^1.1.10",
     "pm2": "^2.10.2",
     "s3": "^4.4.0",
-    "speedtest-net": "^1.4.2"
+    "speedtest-net": "^1.4.2",
+    "sudo": "^1.0.3"
   }
 }
