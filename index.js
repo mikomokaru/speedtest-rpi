@@ -73,7 +73,7 @@ Bacon.repeatedly(1000*60*17,wifis)
 .map((v)=>
 	fs.writeFileSync(`data/${Date.now()}.json`,JSON.stringify(v))
 )
-// .log()
+.log()
 
 //13分おきにs3 syncを実行する
 Bacon.repeatedly(1000*60*13,wifis)
@@ -91,5 +91,5 @@ Bacon.repeatedly(1000*60*13,wifis)
 .flatMap(Bacon.fromPromise)
 .map(del)
 .flatMap(Bacon.fromPromise)
-// .log()
+.log()
 
